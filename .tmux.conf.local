@@ -123,6 +123,9 @@ tmux_conf_theme_colour_15="colour0"
 tmux_conf_theme_colour_16="colour1"
 tmux_conf_theme_colour_17="colour15"
 
+# important!!! 解决颜色失真
+set-option -a terminal-features 'xterm-256color:RGB'
+
 # window style
 tmux_conf_theme_window_fg="default"
 tmux_conf_theme_window_bg="default"
