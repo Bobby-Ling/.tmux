@@ -512,6 +512,14 @@ tmux_conf_uninstall_plugins_on_reload=false
 
 # to enable a plugin, use the 'set -g @plugin' syntax:
 # visit https://github.com/tmux-plugins for available plugins
+
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/tmux-logging'
+# set -g history-limit 10000000
+unbind P
+bind P choose-buffer
+# https://www.cnblogs.com/jumpspider/p/15968605.html
+
 set -g @plugin 'tmux-plugins/tmux-copycat'
 set -g @plugin 'tmux-plugins/tmux-cpu'
 
@@ -519,17 +527,35 @@ set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @resurrect-capture-pane-contents 'on' # 开启恢复面板内容功能
 set -g @resurrect-save-shell-history 'on'
 
+set -g @resurrect-dir '~/.config/tmux/data/resurrect'
+
 set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g status-right 'Continuum status: #{continuum_status}'
 set -g @continuum-save-interval '600'
 # set -g @continuum-restore 'on'
 
-set -g @plugin 'tmux-plugins/tmux-sensible'
-set -g @plugin 'tmux-plugins/tmux-logging'
-set -g history-limit 10000000
-unbind P
-bind P choose-buffer
-# https://www.cnblogs.com/jumpspider/p/15968605.html
+bind -T copy-mode-vi v send-keys -X begin-selection
+bind -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+bind -T copy-mode-vi Escape send-keys -X cancel
+bind -T copy-mode-vi n send-keys -X next-match
+bind -T copy-mode-vi N send-keys -X previous-match
+bind -T copy-mode-vi / send-keys -X search-forward
+bind -T copy-mode-vi ? send-keys -X search-backward
+
+# tmux show-options -g
+
+# w tree view选择窗口
+bind w run -C { choose-tree -ZwK "##{?##{!=:#{session_name},##{session_name}},,##{?window_format,##{?##{e|<:##{window_index},10},##{window_index},##{?##{e|<:##{window_index},36},##{a:##{e|+:##{e|-:##{window_index},10},97}},}},}}" }
+
+# bind -T copy-mode S-PageDown send-keys -X next-prompt
+# bind -T copy-mode S-PageUp send-keys -X previous-prompt
+
+# unbind PageUp
+# unbind PageDown
+# bind -T copy-mode PageUp send-keys -X previous-prompt \; display-message "previous-prompt"
+# bind -T copy-mode PageDown send-keys -X next-prompt \; display-message "next-prompt"
+
+
 
 # -- custom variables ----------------------------------------------------------
 
