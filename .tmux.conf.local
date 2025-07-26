@@ -395,7 +395,7 @@ set -g mouse on
 # force Vi mode
 #   really you should export VISUAL or EDITOR environment variable, see manual
 #set -g status-keys vi
-#set -g mode-keys vi
+set -g mode-keys vi
 
 # replace C-b by C-a instead of using both prefixes
 # set -gu prefix2
@@ -411,6 +411,14 @@ set -g mouse on
 #set -g status-position top
 
 # --- MOUSE ---
+# bind -T copy-mode-vi v send-keys -X begin-selection
+# bind -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+# bind -T copy-mode-vi Escape send-keys -X cancel
+# bind -T copy-mode-vi n send-keys -X next-match
+# bind -T copy-mode-vi N send-keys -X previous-match
+# bind -T copy-mode-vi / send-keys -X search-forward
+# bind -T copy-mode-vi ? send-keys -X search-backward
+
 # Make mouse behave as expected
 # Without this, selecting text with the mouse will send mouse events to the
 # running application, and it will not be possible to copy text from the
@@ -426,8 +434,20 @@ bind -T copy-mode C-WheelDownPane send-keys -X scroll-down
 # In copy mode, copying selection should not cancel copy mode.
 # This is so that we can make multiple selections.
 # We can press 'q' to exit copy mode.
+unbind -T copy-mode MouseDragEnd1Pane
+bind-key -T copy-mode MouseDragEnd1Pane send-keys -X copy-selection
+
 unbind -T copy-mode-vi MouseDragEnd1Pane
 bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-selection
+
+# bind -T copy-mode S-PageDown send-keys -X next-prompt
+# bind -T copy-mode S-PageUp send-keys -X previous-prompt
+
+unbind S-PageUp
+unbind S-PageDown
+bind -T copy-mode S-PageUp send-keys -X previous-prompt \; display-message "previous-prompt"
+bind -T copy-mode S-PageDown send-keys -X next-prompt \; display-message "next-prompt"
+
 
 # # --------------------Override
 # set -g mode-keys vi # to use copy-mode-vi
@@ -534,28 +554,16 @@ set -g status-right 'Continuum status: #{continuum_status}'
 set -g @continuum-save-interval '600'
 # set -g @continuum-restore 'on'
 
-bind -T copy-mode-vi v send-keys -X begin-selection
-bind -T copy-mode-vi y send-keys -X copy-selection-and-cancel
-bind -T copy-mode-vi Escape send-keys -X cancel
-bind -T copy-mode-vi n send-keys -X next-match
-bind -T copy-mode-vi N send-keys -X previous-match
-bind -T copy-mode-vi / send-keys -X search-forward
-bind -T copy-mode-vi ? send-keys -X search-backward
-
 # tmux show-options -g
 
 # w tree view选择窗口
 bind w run -C { choose-tree -ZwK "##{?##{!=:#{session_name},##{session_name}},,##{?window_format,##{?##{e|<:##{window_index},10},##{window_index},##{?##{e|<:##{window_index},36},##{a:##{e|+:##{e|-:##{window_index},10},97}},}},}}" }
 
-# bind -T copy-mode S-PageDown send-keys -X next-prompt
-# bind -T copy-mode S-PageUp send-keys -X previous-prompt
+setw -g automatic-rename on   # rename window to reflect current program
+set -g renumber-windows on    # renumber windows when a window is closed
 
-# unbind PageUp
-# unbind PageDown
-# bind -T copy-mode PageUp send-keys -X previous-prompt \; display-message "previous-prompt"
-# bind -T copy-mode PageDown send-keys -X next-prompt \; display-message "next-prompt"
-
-
+set -g set-titles on          # set terminal title
+setw -g automatic-rename-format "#{pane_current_path}:#{pane_current_command}" # rename window to full path + executable
 
 # -- custom variables ----------------------------------------------------------
 
