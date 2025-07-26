@@ -410,7 +410,24 @@ set -g mouse on
 # move status line to top
 #set -g status-position top
 
+# --- MOUSE ---
+# Make mouse behave as expected
+# Without this, selecting text with the mouse will send mouse events to the
+# running application, and it will not be possible to copy text from the
+# scrollback buffer.
+# See https://github.com/tmux/tmux/issues/145#issuecomment-150732703
+set -g mouse on
+bind -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e; send-keys -M'"
+bind -n WheelDownPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'send-keys -M'"
+bind -n C-WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'copy-mode -e; send-keys -M'"
+bind -T copy-mode C-WheelUpPane send-keys -X scroll-up
+bind -T copy-mode C-WheelDownPane send-keys -X scroll-down
 
+# In copy mode, copying selection should not cancel copy mode.
+# This is so that we can make multiple selections.
+# We can press 'q' to exit copy mode.
+unbind -T copy-mode-vi MouseDragEnd1Pane
+bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-selection
 
 # # --------------------Override
 # set -g mode-keys vi # to use copy-mode-vi
